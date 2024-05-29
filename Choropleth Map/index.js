@@ -1,0 +1,95 @@
+document.addEventListener('DOMContentLoaded', () => {
+   const educationDataURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json';
+   const countyDataURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json';
+
+   Promise.all([
+       fetch(educationDataURL).then(response => response.json()),
+       fetch(countyDataURL).then(response => response.json())
+   ]).then(([educationData, countyData]) => {
+       createChoroplethMap(educationData, countyData);
+   });
+});
+
+function createChoroplethMap(educationData, countyData) {
+   const width = 960;
+   const height = 600;
+   const padding = 60;
+
+   const svg = d3.select('#chart')
+                 .append('svg')
+                 .attr('width', width)
+                 .attr('height', height);
+
+   const path = d3.geoPath();
+
+   const educationById = {};
+   educationData.forEach(d => {
+       educationById[d.fips] = d;
+   });
+
+   const colorScale = d3.scaleQuantize()
+                        .domain([d3.min(educationData, d => d.bachelorsOrHigher), d3.max(educationData, d => d.bachelorsOrHigher)])
+                        .range(d3.schemeBlues[9]);
+
+   svg.append('g')
+      .selectAll('path')
+      .data(topojson.feature(countyData, countyData.objects.counties).features)
+      .enter()
+      .append('path')
+      .attr('class', 'county')
+      .attr('data-fips', d => d.id)
+      .attr('data-education', d => educationById[d.id] ? educationById[d.id].bachelorsOrHigher : 0)
+      .attr('d', path)
+      .attr('fill', d => educationById[d.id] ? colorScale(educationById[d.id].bachelorsOrHigher) : '#ccc')
+      .on('mouseover', (event, d) => {
+          const data = educationById[d.id];
+          const tooltip = d3.select('#tooltip');
+          tooltip.style('opacity', 0.9)
+                 .html(`${data.area_name}, ${data.state}: ${data.bachelorsOrHigher}%`)
+                 .attr('data-education', data.bachelorsOrHigher)
+                 .style('left', `${event.pageX + 5}px`)
+                 .style('top', `${event.pageY - 28}px`);
+      })
+      .on('mouseout', () => {
+          d3.select('#tooltip').style('opacity', 0);
+      });
+
+   const legendWidth = 300;
+   const legendHeight = 20;
+   const legendColors = d3.schemeBlues[9];
+
+   const legendX = d3.scaleLinear()
+                     .domain(colorScale.domain())
+                     .range([0, legendWidth]);
+
+   const legend = d3.select('#legend')
+                    .append('svg')
+                    .attr('width', legendWidth)
+                    .attr('height', legendHeight + 40)
+                    .attr('id', 'legend');
+
+   legend.selectAll('rect')
+         .data(legendColors.map(color => {
+             const d = colorScale.invertExtent(color);
+             if (!d[0]) d[0] = legendX.domain()[0];
+             if (!d[1]) d[1] = legendX.domain()[1];
+             return d;
+         }))
+         .enter()
+         .append('rect')
+         .attr('height', legendHeight)
+         .attr('x', d => legendX(d[0]))
+         .attr('width', d => legendX(d[1]) - legendX(d[0]))
+         .attr('fill', d => colorScale(d[0]));
+
+   const legendXAxis = d3.axisBottom(legendX)
+                         .tickSize(13)
+                         .tickFormat(d => `${Math.round(d)}%`)
+                         .tickValues(colorScale.range().slice(1).map(d => colorScale.invertExtent(d)[0]));
+
+   legend.append('g')
+         .attr('transform', `translate(0, ${legendHeight})`)
+         .call(legendXAxis)
+         .select('.domain')
+         .remove();
+}

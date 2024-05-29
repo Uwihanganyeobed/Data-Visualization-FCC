@@ -1,0 +1,41 @@
+body {
+   font-family: Arial, sans-serif;
+}
+
+#container {
+   width: 80%;
+   margin: auto;
+   text-align: center;
+}
+
+#chart {
+   display: inline-block;
+   position: relative;
+}
+
+.cell {
+   stroke: #000;
+   stroke-width: 0.5;
+}
+
+.tooltip {
+   position: absolute;
+   background-color: white;
+   border: 1px solid black;
+   padding: 5px;
+   pointer-events: none;
+}
+
+#x-axis path, #y-axis path {
+   display: none;
+}
+
+.tick line {
+   stroke: #ccc;
+}
+
+#legend {
+   display: flex;
+   justify-content: center;
+   margin-top: 20px;
+}

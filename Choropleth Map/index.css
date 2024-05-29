@@ -1,0 +1,33 @@
+body {
+   font-family: Arial, sans-serif;
+}
+
+#container {
+   width: 80%;
+   margin: auto;
+   text-align: center;
+}
+
+#chart {
+   display: inline-block;
+   position: relative;
+}
+
+.county {
+   stroke: #fff;
+   stroke-width: 0.5;
+}
+
+.tooltip {
+   position: absolute;
+   background-color: white;
+   border: 1px solid black;
+   padding: 5px;
+   pointer-events: none;
+}
+
+#legend {
+   display: flex;
+   justify-content: center;
+   margin-top: 20px;
+}
