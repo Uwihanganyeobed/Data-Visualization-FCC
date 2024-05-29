@@ -1,4 +1,57 @@
-document.addEventListener("DOMContentLoaded", function() {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Chart</title>
+    <style>
+body {
+   font-family: Arial, sans-serif;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100vh;
+   margin: 0;
+   background-color: #f8f9fa;
+}
+
+#chart-container {
+   text-align: center;
+}
+
+#title {
+   margin-bottom: 20px;
+}
+
+#chart {
+   width: 800px;
+   height: 400px;
+}
+
+.bar {
+   fill: steelblue;
+}
+
+#tooltip {
+   position: absolute;
+   background-color: white;
+   border: 1px solid black;
+   padding: 5px;
+   display: none;
+   pointer-events: none;
+}
+
+    </style>
+</head>
+<body>
+    <div id="chart-container">
+        <h1 id="title">United States GDP</h1>
+        <svg id="chart"></svg>
+    </div>
+    <div id="tooltip"></div>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
    // URL to fetch the data
    const url = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json";
 
@@ -86,3 +139,6 @@ Y-Axis: Generates and appends the y-axis to the SVG.
 Create Bars: Binds data to rect elements, sets their attributes, and positions them accordingly.
 Tooltip Events: Adds mouseover and mouseout events to display and hide the tooltip with relevant data.
 */
+    </script>
+</body>
+</html>
